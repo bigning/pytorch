@@ -3,6 +3,7 @@ import contextlib
 import warnings
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Set, Union
+from typing_extensions import TypeGuard
 
 import torch
 import torchgen
@@ -264,7 +265,19 @@ class BaseTorchDispatchMode(TorchDispatchMode):
         return func(*args, **kwargs)
 
 
-def is_traceable_wrapper_subclass(t):
+# Subtypes which have __tensor_flatten__ and __tensor_unflatten__. A Protocol
+# would have been better but you can't specify a protocol that says "something
+# that inherits from Tensor and adds these methods".
+TensorWithFlatten = Union[
+    "torch.distributed._functional_collectives.AsyncCollectiveTensor",
+    "torch.distributed._tensor.api.DTensor",
+    "torch.nested._internal.nested_tensor.NestedTensor",
+    "torch.sparse.semi_structured.SparseSemiStructuredTensor",
+    "torch.testing._internal.two_tensor.TwoTensor",
+]
+
+
+def is_traceable_wrapper_subclass(t: object) -> TypeGuard[TensorWithFlatten]:
     """
     Returns whether or not a tensor subclass that implements __torch_dispatch__
     is 'traceable' with torch.compile.
