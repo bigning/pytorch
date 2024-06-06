@@ -22,6 +22,7 @@ from .functions import (
     FloorDiv,
     FloorToInt,
     IntTrueDiv,
+    Identity,
     IsNonOverlappingAndDenseIndicator,
     Mod,
     ModularIndexing,
@@ -87,6 +88,7 @@ def handlers():
         ModularIndexing: "modular_indexing",
         sympy.functions.elementary.piecewise.ExprCondPair: "expr_cond_pair",
         sympy.Piecewise: "piecewise",
+        Identity: "identity",
         IsNonOverlappingAndDenseIndicator: "is_non_overlapping_and_dense_indicator",
         RoundDecimal: "round_decimal",
     }
