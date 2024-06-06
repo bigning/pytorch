@@ -199,7 +199,11 @@ def _create_runtime_wrapper(
             for idx in indices_of_inps_to_detach:
                 if isinstance(args_[idx], torch.Tensor):
                     args_[idx] = args_[idx].detach()
-            with torch.autograd._force_original_view_tracking(True):
+            # We need enable_grad when user runs compiled region under no_grad,
+            # and inputs have requires_grad. Subregion of fn can be under enable_grad.
+            with torch.autograd._force_original_view_tracking(
+                True
+            ), torch.enable_grad():
                 all_outs = call_func_at_runtime_with_args(
                     compiled_fn, args_, disable_amp=disable_amp, steal_args=True
                 )
